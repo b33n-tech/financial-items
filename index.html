@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Items Budgeting App</title>
+<style>
+body { font-family: Arial, sans-serif; margin: 20px; background: #f0f2f5; }
+h1 { color: #333; }
+.category { background: #fff; padding: 15px; margin-bottom: 10px; border-radius: 8px; box-shadow: 0 1px 5px rgba(0,0,0,0.1); }
+button { margin: 5px 0; padding: 8px 12px; border: none; border-radius: 4px; background: #007bff; color: white; cursor: pointer; }
+button:disabled { background: #aaa; cursor: not-allowed; }
+.history { background: #fff; padding: 15px; border-radius: 8px; box-shadow: 0 1px 5px rgba(0,0,0,0.1); margin-top: 20px; max-height: 300px; overflow-y: auto;}
+</style>
+</head>
+<body>
+
+<h1>Items Budgeting App</h1>
+
+<div id="categories"></div>
+
+<button onclick="resetAll()">Réinitialiser tout</button>
+
+<div class="history">
+<h2>Historique</h2>
+<ul id="historyList"></ul>
+</div>
+
+<script>
+// --- Données initiales ---
+let defaultCategories = [
+    { name: "Burgers", total: 3, remaining: 3, unitValue: 16, unitLabel: "burger" },
+    { name: "Equipement", total: 3, remaining: 3, unitValue: 60, unitLabel: "equip" },
+    { name: "Bonbons", total: 20, remaining: 20, unitValue: 0.7, unitLabel: "bonbon" }
+];
+
+// --- Charger depuis localStorage si existant ---
+let categories = JSON.parse(localStorage.getItem('categories')) || defaultCategories;
+let history = JSON.parse(localStorage.getItem('history')) || [];
+
+function saveState() {
+    localStorage.setItem('categories', JSON.stringify(categories));
+    localStorage.setItem('history', JSON.stringify(history));
+}
+
+// --- Affichage des catégories ---
+function renderCategories() {
+    const container = document.getElementById('categories');
+    container.innerHTML = '';
+    categories.forEach((cat, index) => {
+        const div = document.createElement('div');
+        div.className = 'category';
+        div.innerHTML = `<h2>${cat.name} — ${cat.remaining}/${cat.total} ${cat.unitLabel}</h2>
+                         <p>Valeur unitaire: ${cat.unitValue}€</p>`;
+        const btn = document.createElement('button');
+        btn.textContent = `+1 ${cat.unitLabel}`;
+        btn.disabled = cat.remaining <= 0;
+        btn.onclick = () => addItem(index, 1);
+        div.appendChild(btn);
+
+        const customInput = document.createElement('input');
+        customInput.type = 'number';
+        customInput.min = 1;
+        customInput.value = 1;
+        customInput.style.marginLeft = '10px';
+        div.appendChild(customInput);
+
+        const customBtn = document.createElement('button');
+        customBtn.textContent = `+Custom`;
+        customBtn.onclick = () => addItem(index, parseInt(customInput.value));
+        div.appendChild(customBtn);
+
+        container.appendChild(div);
+    });
+}
+
+// --- Ajouter un item ---
+function addItem(catIndex, qty) {
+    const cat = categories[catIndex];
+    const actualQty = Math.min(qty, cat.remaining);
+    cat.remaining -= actualQty;
+    const now = new Date().toLocaleString();
+    history.unshift({ category: cat.name, qty: actualQty, timestamp: now });
+    saveState();
+    renderCategories();
+    renderHistory();
+}
+
+// --- Affichage de l'historique ---
+function renderHistory() {
+    const ul = document.getElementById('historyList');
+    ul.innerHTML = '';
+    history.forEach(h => {
+        const li = document.createElement('li');
+        li.textContent = `${h.timestamp}: ${h.qty} ${h.category}`;
+        ul.appendChild(li);
+    });
+}
+
+// --- Reset ---
+function resetAll() {
+    if(confirm("Confirmez-vous la réinitialisation de tout ?")) {
+        categories = defaultCategories.map(c => ({ ...c, remaining: c.total }));
+        history = [];
+        saveState();
+        renderCategories();
+        renderHistory();
+    }
+}
+
+// --- Initial render ---
+renderCategories();
+renderHistory();
+</script>
+
+</body>
+</html>
