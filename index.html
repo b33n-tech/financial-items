@@ -2,25 +2,32 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<title>Items Budgeting App - Visual</title>
+<title>Items Budgeting App - Mobile Friendly</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
-body { font-family: Arial, sans-serif; background: #f0f2f5; margin: 20px; }
-h1 { text-align: center; color: #333; }
-.category { background: #fff; padding: 20px; margin: 15px 0; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); text-align: center; }
-button.item-btn { font-size: 24px; padding: 20px 40px; margin: 10px; border: none; border-radius: 12px; cursor: pointer; color: white; }
+body { font-family: Arial, sans-serif; background: #f0f2f5; margin: 10px; }
+h1 { text-align: center; color: #333; font-size: 1.8em; }
+.category { background: #fff; padding: 15px; margin: 12px 0; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); text-align: center; }
+button.item-btn { font-size: 1.5em; padding: 15px; margin: 8px 0; border: none; border-radius: 12px; cursor: pointer; color: white; width: 90%; max-width: 300px; }
 button.item-btn:disabled { background: #aaa; cursor: not-allowed; }
-.progress-bar { height: 25px; border-radius: 12px; background: #ddd; margin-top: 10px; overflow: hidden; }
-.progress-fill { height: 100%; background: #28a745; text-align: center; color: white; line-height: 25px; font-weight: bold; transition: width 0.3s; }
+.progress-bar { height: 30px; border-radius: 12px; background: #ddd; margin-top: 10px; overflow: hidden; }
+.progress-fill { height: 100%; background: #28a745; text-align: center; color: white; line-height: 30px; font-weight: bold; transition: width 0.3s; }
 .history { background: #fff; padding: 15px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin-top: 20px; max-height: 250px; overflow-y: auto;}
+@media (max-width: 480px) {
+    h1 { font-size: 1.5em; }
+    button.item-btn { font-size: 1.3em; padding: 12px; width: 100%; }
+    .progress-bar { height: 25px; }
+    .progress-fill { line-height: 25px; font-size: 0.9em; }
+}
 </style>
 </head>
 <body>
 
-<h1>Items Budgeting App - Visuel</h1>
+<h1>Items Budgeting App</h1>
 
 <div id="categories"></div>
 
-<button onclick="resetAll()" style="font-size:18px; padding:10px 20px; margin-top:15px;">Réinitialiser tout</button>
+<button onclick="resetAll()" style="font-size:1.2em; padding:10px 20px; margin-top:15px;">Réinitialiser tout</button>
 
 <div class="history">
 <h2>Historique</h2>
@@ -28,7 +35,7 @@ button.item-btn:disabled { background: #aaa; cursor: not-allowed; }
 </div>
 
 <script>
-// --- Données initiales ---
+// Données initiales
 let defaultCategories = [
     { name: "Burgers", total: 3, remaining: 3, color: "#007bff", unitLabel: "burger" },
     { name: "Equipement", total: 3, remaining: 3, color: "#dc3545", unitLabel: "equip" },
@@ -43,7 +50,7 @@ function saveState() {
     localStorage.setItem('history', JSON.stringify(history));
 }
 
-// --- Affichage catégories ---
+// Affichage catégories
 function renderCategories() {
     const container = document.getElementById('categories');
     container.innerHTML = '';
@@ -76,7 +83,7 @@ function renderCategories() {
     });
 }
 
-// --- Ajouter item ---
+// Ajouter item
 function addItem(catIndex, qty) {
     const cat = categories[catIndex];
     const actualQty = Math.min(qty, cat.remaining);
@@ -88,7 +95,7 @@ function addItem(catIndex, qty) {
     renderHistory();
 }
 
-// --- Historique ---
+// Historique
 function renderHistory() {
     const ul = document.getElementById('historyList');
     ul.innerHTML = '';
@@ -99,7 +106,7 @@ function renderHistory() {
     });
 }
 
-// --- Reset ---
+// Reset
 function resetAll() {
     if(confirm("Confirmez-vous la réinitialisation de tout ?")) {
         categories = defaultCategories.map(c => ({ ...c, remaining: c.total }));
@@ -110,7 +117,7 @@ function resetAll() {
     }
 }
 
-// --- Initial render ---
+// Initial render
 renderCategories();
 renderHistory();
 </script>
